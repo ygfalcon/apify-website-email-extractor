@@ -5,51 +5,161 @@
     "properties": {
       "domain": {
         "type": "string",
-        "description": "Domain without www."
+        "title": "Domain",
+        "description": "Hostname without a leading www.",
+        "example": "apify.com"
       },
       "url": {
         "type": "string",
-        "description": "Normalized home page URL that was scanned."
+        "title": "URL",
+        "description": "Final URL of the first page that was scanned.",
+        "example": "https://apify.com/"
       },
       "status": {
         "type": "string",
-        "description": "ok, no_contacts_found, or an error message."
+        "title": "Status",
+        "description": "ok when an email, phone, or social profile was found; no_contacts_found when the site loaded but nothing was found; website_unreachable or invalid_url otherwise.",
+        "example": "ok"
       },
       "emails": {
         "type": "array",
-        "description": "All emails found on the scanned pages."
+        "title": "Emails",
+        "description": "Syntax-valid emails, best contact first. Duplicates and placeholders are removed.",
+        "items": { "type": "string" }
       },
       "primaryEmail": {
-        "type": [
-          "string",
-          "null"
-        ],
-        "description": "First / best email found."
+        "type": ["string", "null"],
+        "title": "Primary email",
+        "description": "Highest-ranked email after syntax, MX, same-domain, and role scoring.",
+        "example": "hello@apify.com"
+      },
+      "primaryEmailSyntaxValid": {
+        "type": ["boolean", "null"],
+        "title": "Primary email syntax",
+        "description": "True when primaryEmail passed syntax validation. Null when there is no primary email."
+      },
+      "primaryEmailMxValid": {
+        "type": ["boolean", "null"],
+        "title": "Primary email MX",
+        "description": "True when the primary email domain has an MX record, false when DNS says it does not, null when no email was found or the lookup did not answer."
+      },
+      "emailDetails": {
+        "type": "array",
+        "title": "Email details",
+        "description": "Ranked emails with syntax, MX, score, sources, and any name or role tied to that address.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "email": { "type": "string" },
+            "syntaxValid": { "type": "boolean" },
+            "mxValid": { "type": ["boolean", "null"] },
+            "score": { "type": "number" },
+            "sources": { "type": "array", "items": { "type": "string" } },
+            "name": { "type": ["string", "null"] },
+            "role": { "type": ["string", "null"] }
+          },
+          "required": ["email", "syntaxValid", "mxValid", "score", "sources", "name", "role"]
+        }
       },
       "phones": {
         "type": "array",
-        "description": "Phone numbers found."
+        "title": "Phones",
+        "description": "Deduped phone numbers from tel links, schema.org, WhatsApp links, and labeled text. Digits only, with a leading + when a country code was present.",
+        "items": { "type": "string" }
+      },
+      "primaryPhone": {
+        "type": ["string", "null"],
+        "title": "Primary phone",
+        "description": "Phone attached to the best contact, otherwise the strongest phone found."
       },
       "socials": {
         "type": "object",
-        "description": "Social profile URLs keyed by network (facebook, instagram, linkedin, twitter, tiktok, youtube, pinterest)."
+        "title": "Social profiles",
+        "description": "Canonical profile URLs for the same networks Contact Details Scraper publishes: Facebook, Instagram, LinkedIn, X, YouTube, TikTok, Pinterest, Discord, Snapchat, Threads, Telegram, Reddit, and WhatsApp.",
+        "properties": {
+          "facebook": { "type": "array", "items": { "type": "string" } },
+          "instagram": { "type": "array", "items": { "type": "string" } },
+          "linkedin": { "type": "array", "items": { "type": "string" } },
+          "twitter": { "type": "array", "items": { "type": "string" } },
+          "youtube": { "type": "array", "items": { "type": "string" } },
+          "tiktok": { "type": "array", "items": { "type": "string" } },
+          "pinterest": { "type": "array", "items": { "type": "string" } },
+          "discord": { "type": "array", "items": { "type": "string" } },
+          "snapchat": { "type": "array", "items": { "type": "string" } },
+          "threads": { "type": "array", "items": { "type": "string" } },
+          "telegram": { "type": "array", "items": { "type": "string" } },
+          "reddit": { "type": "array", "items": { "type": "string" } },
+          "whatsapp": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["facebook", "instagram", "linkedin", "twitter", "youtube", "tiktok", "pinterest", "discord", "snapchat", "threads", "telegram", "reddit", "whatsapp"],
+        "additionalProperties": false
+      },
+      "contacts": {
+        "type": "array",
+        "title": "Contacts",
+        "description": "People and inboxes found on the site, best first. Name and role are taken from the page or schema.org, not from an external leads database.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": ["string", "null"] },
+            "role": { "type": ["string", "null"] },
+            "roleSource": { "type": ["string", "null"] },
+            "email": { "type": ["string", "null"] },
+            "phone": { "type": ["string", "null"] },
+            "syntaxValid": { "type": ["boolean", "null"] },
+            "mxValid": { "type": ["boolean", "null"] },
+            "score": { "type": "number" },
+            "sources": { "type": "array", "items": { "type": "string" } }
+          },
+          "required": ["name", "role", "email", "phone", "score", "sources"]
+        }
+      },
+      "contactName": {
+        "type": ["string", "null"],
+        "title": "Contact name",
+        "description": "Name of the best contact when the page or schema.org states one."
+      },
+      "contactRole": {
+        "type": ["string", "null"],
+        "title": "Contact role",
+        "description": "Job title, schema.org contact type, or inbox function (Sales, Support, General) for the best contact."
+      },
+      "bestContact": {
+        "type": ["object", "null"],
+        "title": "Best contact",
+        "description": "Single ranked contact for the domain. Null when nothing was found.",
+        "properties": {
+          "name": { "type": ["string", "null"] },
+          "role": { "type": ["string", "null"] },
+          "roleSource": { "type": ["string", "null"] },
+          "email": { "type": ["string", "null"] },
+          "phone": { "type": ["string", "null"] },
+          "syntaxValid": { "type": ["boolean", "null"] },
+          "mxValid": { "type": ["boolean", "null"] },
+          "score": { "type": "number" },
+          "reasons": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["name", "role", "email", "phone", "score", "reasons"]
       },
       "pagesScanned": {
-        "type": [
-          "number",
-          "null"
-        ],
-        "description": "Number of pages fetched for this domain."
+        "type": ["number", "null"],
+        "title": "Pages scanned",
+        "description": "HTML pages actually fetched for this domain."
+      },
+      "pages": {
+        "type": "array",
+        "title": "Pages",
+        "description": "Final URLs of the pages that were fetched.",
+        "items": { "type": "string" }
       },
       "scrapedAt": {
         "type": "string",
-        "description": "ISO timestamp of the scan."
+        "title": "Scraped at",
+        "description": "ISO timestamp of the scan.",
+        "example": "2026-10-23T00:00:00.000Z"
       }
     },
-    "required": [
-      "domain",
-      "status"
-    ]
+    "required": ["domain", "status"]
   },
   "views": {
     "contacts": {
@@ -58,7 +168,11 @@
         "fields": [
           "domain",
           "status",
+          "contactName",
+          "contactRole",
           "primaryEmail",
+          "primaryEmailMxValid",
+          "primaryPhone",
           "emails",
           "phones",
           "socials"
@@ -67,25 +181,36 @@
       "display": {
         "component": "table",
         "properties": {
-          "domain": {
-            "label": "Domain"
-          },
-          "status": {
-            "label": "Status"
-          },
-          "primaryEmail": {
-            "label": "Primary email"
-          },
-          "emails": {
-            "label": "Emails"
-          },
-          "phones": {
-            "label": "Phones"
-          },
-          "socials": {
-            "label": "Socials",
-            "format": "object"
-          }
+          "domain": { "label": "Domain", "format": "text" },
+          "status": { "label": "Status", "format": "text" },
+          "contactName": { "label": "Name", "format": "text" },
+          "contactRole": { "label": "Role", "format": "text" },
+          "primaryEmail": { "label": "Primary email", "format": "text" },
+          "primaryEmailMxValid": { "label": "MX valid", "format": "boolean" },
+          "primaryPhone": { "label": "Primary phone", "format": "text" },
+          "emails": { "label": "Emails", "format": "array" },
+          "phones": { "label": "Phones", "format": "array" },
+          "socials": { "label": "Socials", "format": "object" }
+        }
+      }
+    },
+    "validation": {
+      "title": "Validation",
+      "description": "Syntax and MX results for every kept email, plus the extracted contacts.",
+      "transformation": {
+        "fields": ["domain", "primaryEmail", "primaryEmailSyntaxValid", "primaryEmailMxValid", "contactName", "contactRole", "emailDetails", "contacts"]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "domain": { "label": "Domain", "format": "text" },
+          "primaryEmail": { "label": "Primary email", "format": "text" },
+          "primaryEmailSyntaxValid": { "label": "Syntax", "format": "boolean" },
+          "primaryEmailMxValid": { "label": "MX", "format": "boolean" },
+          "contactName": { "label": "Name", "format": "text" },
+          "contactRole": { "label": "Role", "format": "text" },
+          "emailDetails": { "label": "Email details", "format": "array" },
+          "contacts": { "label": "Contacts", "format": "array" }
         }
       }
     }

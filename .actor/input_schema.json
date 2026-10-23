@@ -36,6 +36,12 @@
       "editor": "hidden",
       "description": "Only charge for domains with contacts"
     },
+    "validateMx": {
+      "title": "Validate MX records",
+      "type": "boolean",
+      "default": true,
+      "description": "After syntax checks, look up an MX record for each email domain. Lookups time out quickly, are cached for the run, and never call a paid verification API. Turn this off to skip DNS."
+    },
     "proxyConfiguration": {
       "title": "Proxy",
       "type": "object",
