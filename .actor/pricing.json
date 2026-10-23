@@ -1,0 +1,1 @@
+{ "pricingModel": "PAY_PER_EVENT", "events": [ { "eventName": "domain-with-contacts", "title": "Domain with contacts", "description": "One domain where at least one email, phone or social profile was found. Domains with nothing found are free.", "priceUsd": 0.0015 } ] }

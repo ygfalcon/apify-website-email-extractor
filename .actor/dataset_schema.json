@@ -1,0 +1,2 @@
+{ "actorSpecification": 1, "fields": { "type": "object", "properties": { "domain": {"type":"string"}, "status": {"type":"string"}, "emails": {"type":"array"}, "primaryEmail": {"type":["string","null"]}, "phones": {"type":"array"}, "socials": {"type":"object"} }, "required": ["domain","status"] },
+  "views": { "contacts": { "title": "Contacts", "transformation": { "fields": ["domain","status","primaryEmail","emails","phones","socials"] }, "display": { "component": "table" } } } }
