@@ -2,7 +2,7 @@ import { Actor, log } from 'apify';
 import { enrichWebsite } from './contacts.js';
 
 await Actor.init();
-const { urls = [], maxPagesPerDomain = 4, concurrency = 10, chargeOnlyHits = true, proxyConfiguration: pc } = (await Actor.getInput()) || {};
+const { urls = [], maxPagesPerDomain = 3, concurrency = 20, chargeOnlyHits = true, proxyConfiguration: pc } = (await Actor.getInput()) || {};
 const proxy = pc?.useApifyProxy || pc?.proxyUrls ? await Actor.createProxyConfiguration(pc) : undefined;
 const list = [...new Set(urls.map((u) => (typeof u === 'string' ? u : u.url)).filter(Boolean).map((u) => {
     try { const x = new URL(u.startsWith('http') ? u : `https://${u}`); return `${x.protocol}//${x.host}/`; } catch { return null; }

@@ -1,5 +1,18 @@
-{ "actorSpecification": 1, "name": "website-email-extractor",
+{
+  "actorSpecification": 1,
+  "name": "website-email-extractor",
   "title": "Website Email & Contact Extractor: Emails, Phones, Socials per Domain",
   "description": "Paste a list of websites or domains and get one clean row per domain with emails, phone numbers and Facebook, Instagram, LinkedIn, X, TikTok and YouTube links from the home, contact and about pages. Pay only for domains where contacts were found.",
-  "version": "1.0", "buildTag": "latest", "input": "./input_schema.json", "storages": { "dataset": "./dataset_schema.json" },
-  "dockerfile": "../Dockerfile", "readme": "../README.md" }
+  "version": "1.0",
+  "buildTag": "latest",
+  "input": "./input_schema.json",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  },
+  "dockerfile": "../Dockerfile",
+  "readme": "../README.md",
+  "output": "./output_schema.json",
+  "defaultMemoryMbytes": 256,
+  "minMemoryMbytes": 256,
+  "maxMemoryMbytes": 1024
+}

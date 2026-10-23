@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Website contacts",
+  "description": "Where this Actor stores its output.",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Results (dataset items)",
+      "description": "One row per domain with emails, phones and social profiles.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

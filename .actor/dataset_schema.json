@@ -1,2 +1,93 @@
-{ "actorSpecification": 1, "fields": { "type": "object", "properties": { "domain": {"type":"string"}, "status": {"type":"string"}, "emails": {"type":"array"}, "primaryEmail": {"type":["string","null"]}, "phones": {"type":"array"}, "socials": {"type":"object"} }, "required": ["domain","status"] },
-  "views": { "contacts": { "title": "Contacts", "transformation": { "fields": ["domain","status","primaryEmail","emails","phones","socials"] }, "display": { "component": "table" } } } }
+{
+  "actorSpecification": 1,
+  "fields": {
+    "type": "object",
+    "properties": {
+      "domain": {
+        "type": "string",
+        "description": "Domain without www."
+      },
+      "url": {
+        "type": "string",
+        "description": "Normalized home page URL that was scanned."
+      },
+      "status": {
+        "type": "string",
+        "description": "ok, no_contacts_found, or an error message."
+      },
+      "emails": {
+        "type": "array",
+        "description": "All emails found on the scanned pages."
+      },
+      "primaryEmail": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "First / best email found."
+      },
+      "phones": {
+        "type": "array",
+        "description": "Phone numbers found."
+      },
+      "socials": {
+        "type": "object",
+        "description": "Social profile URLs keyed by network (facebook, instagram, linkedin, twitter, tiktok, youtube, pinterest)."
+      },
+      "pagesScanned": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "description": "Number of pages fetched for this domain."
+      },
+      "scrapedAt": {
+        "type": "string",
+        "description": "ISO timestamp of the scan."
+      }
+    },
+    "required": [
+      "domain",
+      "status"
+    ]
+  },
+  "views": {
+    "contacts": {
+      "title": "Contacts",
+      "transformation": {
+        "fields": [
+          "domain",
+          "status",
+          "primaryEmail",
+          "emails",
+          "phones",
+          "socials"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "domain": {
+            "label": "Domain"
+          },
+          "status": {
+            "label": "Status"
+          },
+          "primaryEmail": {
+            "label": "Primary email"
+          },
+          "emails": {
+            "label": "Emails"
+          },
+          "phones": {
+            "label": "Phones"
+          },
+          "socials": {
+            "label": "Socials",
+            "format": "object"
+          }
+        }
+      }
+    }
+  }
+}
