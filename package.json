@@ -1,18 +1,21 @@
 {
   "name": "website-contact-extractor",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "Extract emails, phones, names, roles, and social profiles from websites.",
   "main": "src/main.js",
   "type": "module",
   "scripts": {
-    "start": "node src/main.js"
+    "start": "node src/main.js",
+    "test": "node --test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "apify": "^3.7.2",
-    "crawlee": "^3.18.2",
-    "playwright": "^1.48.2"
+    "got-scraping": "^4.2.2"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1"
   }
 }
