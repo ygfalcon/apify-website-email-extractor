@@ -92,10 +92,12 @@ export async function fetchHtml(url, { proxyUrl, timeoutMs = 12000, fetchImpl = 
 }
 
 async function openHomepage(url, fetchOptions) {
-    const first = await fetchHtml(url, fetchOptions)
+    // Try HTTPS first even for http:// listings (most sites support it and some networks block port 80),
+    // then fall back to plain HTTP.
+    const secure = url.replace(/^http:\/\//, 'https://')
+    const first = await fetchHtml(secure, fetchOptions)
     if (first) return first
-    if (url.startsWith('https://')) return fetchHtml(url.replace('https://', 'http://'), fetchOptions)
-    return null
+    return fetchHtml(secure.replace('https://', 'http://'), fetchOptions)
 }
 
 export async function enrichWebsite(website, {
