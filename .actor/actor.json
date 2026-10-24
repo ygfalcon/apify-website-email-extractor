@@ -1,7 +1,7 @@
 {
   "actorSpecification": 1,
   "name": "website-email-extractor",
-  "title": "Website Email & Contact Extractor: Emails, Phones, Socials per Domain",
+  "title": "Website Email Extractor: Emails, Phones & Socials",
   "description": "Bulk email finder for any list of websites: one row per domain with de-obfuscated, MX-checked emails, phones, a ranked best contact with name & role, and 13 social networks. HTTP-only and fast. Pay $0.0015 only for domains where a contact is found. Misses free.",
   "version": "1.1",
   "buildTag": "latest",

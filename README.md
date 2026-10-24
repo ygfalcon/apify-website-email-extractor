@@ -1,4 +1,4 @@
-# 📧 Website Email & Contact Extractor: Emails, Phones, Socials per Domain
+# 📧 Website Email Extractor: Emails, Phones & Socials
 
 **Paste a list of websites, get one clean contact row per domain.** Emails (including obfuscated ones), phone numbers, the best person to contact with their name and role when the site lists them, and 13 social networks, at **$0.0015 per domain where something is found. Misses are free.**
 
