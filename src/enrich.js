@@ -108,6 +108,7 @@ export async function enrichWebsite(website, {
     resolveMx,
     fetchImpl,
     mxCache: cache,
+    timeoutMs = 12000,
 } = {}) {
     const empty = {
         emails: [],
@@ -133,7 +134,7 @@ export async function enrichWebsite(website, {
         empty.error = 'invalid_url'
         return empty
     }
-    const fetchOptions = { proxyUrl, fetchImpl }
+    const fetchOptions = { proxyUrl, fetchImpl, timeoutMs }
     const home = await openHomepage(start.href, fetchOptions)
     if (!home) {
         empty.error = 'website_unreachable'
