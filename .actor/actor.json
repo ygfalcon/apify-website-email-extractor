@@ -2,7 +2,7 @@
   "actorSpecification": 1,
   "name": "website-email-extractor",
   "title": "Website Email & Contact Extractor: Emails, Phones, Socials per Domain",
-  "description": "Paste websites or domains and get one row per domain: de-obfuscated emails with syntax and MX checks, phone numbers, a ranked contact with name and role when the page states them, and Facebook, Instagram, LinkedIn, X, YouTube, TikTok, Pinterest, Discord, Snapchat, Threads, Telegram, Reddit, and WhatsApp profiles. Scans home, contact, about, footer, and impressum pages. You pay only for domains where a contact was found.",
+  "description": "Bulk email finder for any list of websites: one row per domain with de-obfuscated, MX-checked emails, phones, a ranked best contact with name & role, and 13 social networks. HTTP-only and fast. Pay $0.0015 only for domains where a contact is found. Misses free.",
   "version": "1.1",
   "buildTag": "latest",
   "input": "./input_schema.json",

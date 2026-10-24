@@ -7,7 +7,7 @@
       "title": "Websites or domains",
       "type": "array",
       "editor": "stringList",
-      "description": "One per line. Domains (example.com) or URLs. Duplicates are removed.",
+      "description": "One per line: bare domains (acme.com) or full URLs. Duplicates are removed automatically. You're only charged for domains where a contact is found.",
       "prefill": [
         "apify.com",
         "stripe.com"
@@ -19,7 +19,7 @@
       "minimum": 1,
       "maximum": 10,
       "default": 3,
-      "description": "Home page plus contact/about/impressum pages."
+      "description": "Pages scanned per domain: the home page first, then contact, about, impressum and footer-linked pages. 3 covers most sites."
     },
     "concurrency": {
       "title": "Parallel domains",
@@ -27,14 +27,14 @@
       "minimum": 1,
       "maximum": 50,
       "default": 20,
-      "description": "Parallel domains"
+      "description": "How many domains to process at the same time. 20 is fast and polite. Lower it if a site rate-limits you."
     },
     "chargeOnlyHits": {
       "title": "Only charge for domains with contacts",
       "type": "boolean",
       "default": true,
       "editor": "hidden",
-      "description": "Only charge for domains with contacts"
+      "description": "Charge only for domains where at least one contact was found."
     },
     "validateMx": {
       "title": "Validate MX records",
@@ -52,7 +52,7 @@
       "default": {
         "useApifyProxy": false
       },
-      "description": "Proxy"
+      "description": "Off by default because most sites don't need it. Turn on the Apify proxy if many domains block or time out."
     }
   },
   "required": [
