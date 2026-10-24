@@ -1,6 +1,6 @@
 # 📧 Website Email Extractor: Emails, Phones & Socials
 
-**Paste a list of websites, get one clean contact row per domain.** Emails (including obfuscated ones), phone numbers, the best person to contact with their name and role when the site lists them, and 13 social networks, at **$0.0015 per domain where something is found. Misses are free.**
+**Paste a list of websites, get one clean contact row per domain.** Emails (including obfuscated ones), phone numbers, the best person to contact with their name and role when the site lists them, and 13 social networks, at **$0.0029 per domain where something is found. Misses are free.**
 
 ## 🎯 Who it's for
 - **Sales and growth teams** enriching a list of company domains before outreach
@@ -63,9 +63,9 @@ In the same run, `stripe.com` returned a phone number and five social networks, 
 ## 💵 Pricing, in plain English
 | Event | When it's charged | Price |
 |---|---|---|
-| `domain-with-contacts` | A domain where at least one email, phone or social profile was found | **$0.0015** |
+| `domain-with-contacts` | A domain where at least one email, phone or social profile was found | **$0.0029** |
 
-That's **$1.50 per 1,000 domains with results**, and nothing for the rest. For example, 100 domains with contacts found on 70 cost $0.105. Platform usage is included.
+That's **$2.90 per 1,000 domains with results**, and nothing for the rest. For example, 100 domains with contacts found on 70 cost $0.203. Platform usage is included.
 
 ## 💡 Use cases
 - Enrich a list of company domains with emails and LinkedIn pages before a cold-email campaign

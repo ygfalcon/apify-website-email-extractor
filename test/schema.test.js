@@ -73,5 +73,5 @@ test('price is unchanged', () => {
     assert.equal(pricing.pricingModel, 'PAY_PER_EVENT')
     assert.equal(pricing.events.length, 1)
     assert.equal(pricing.events[0].eventName, 'domain-with-contacts')
-    assert.equal(pricing.events[0].priceUsd, 0.0015)
+    assert.equal(pricing.events[0].priceUsd, 0.0029)
 })
