@@ -1,3 +1,4 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max'
 // Pure contact extraction: de-obfuscation, syntax checks, socials, phones, names, and ranking.
 // Network I/O and MX lookups live in enrich.js.
 
@@ -1040,7 +1041,30 @@ export function scoreEmail(row, siteHost) {
     return { score, reasons }
 }
 
-export function finalizeContacts({ emailRows, people, phoneEntries, siteHost }) {
+const CC_TLD = { uk: 'GB', de: 'DE', at: 'AT', ch: 'CH', fr: 'FR', es: 'ES', it: 'IT', nl: 'NL', be: 'BE', ie: 'IE', au: 'AU', nz: 'NZ', ca: 'CA', in: 'IN', br: 'BR', mx: 'MX', jp: 'JP', se: 'SE', no: 'NO', dk: 'DK', fi: 'FI', pl: 'PL', pt: 'PT', za: 'ZA', sg: 'SG', hk: 'HK' }
+
+// Keep only numbers that are real, dialable phone numbers. Returns E.164 or null.
+export function validatePhone(raw, siteHost = '') {
+    if (!raw) return null
+    const value = String(raw)
+    const tld = String(siteHost).split('.').pop()
+    const regions = [...new Set([CC_TLD[tld], 'US'].filter(Boolean))]
+    const attempts = value.startsWith('+') ? [[value]] : regions.map((region) => [value, region])
+    for (const args of attempts) {
+        try {
+            const parsed = parsePhoneNumberFromString(...args)
+            if (parsed?.isValid()) return parsed.number
+        } catch { /* ignore */ }
+    }
+    return null
+}
+
+export function finalizeContacts({ emailRows, people: rawPeople, phoneEntries: rawPhoneEntries, siteHost }) {
+    const phoneEntries = rawPhoneEntries
+        .map((entry) => ({ ...entry, phone: validatePhone(entry.phone, siteHost) }))
+        .filter((entry) => entry.phone)
+    const people = rawPeople.map((person) => ({ ...person, phone: validatePhone(person.phone, siteHost) }))
+    emailRows = emailRows.map((row) => ({ ...row, phone: row.phone ? validatePhone(row.phone, siteHost) : row.phone }))
     const emails = new Map()
     for (const row of emailRows) {
         const email = cleanEmail(row.email)

@@ -14,7 +14,25 @@ export function clearMxCache() {
     mxCache.clear()
 }
 
-export async function checkMx(domain, { resolveMx = dns.resolveMx, timeoutMs = 1500, cache = mxCache } = {}) {
+export async function mxOverHttps(domain, timeoutMs = 3000) {
+    for (const base of ['https://cloudflare-dns.com/dns-query', 'https://dns.google/resolve']) {
+        try {
+            const response = await fetch(`${base}?name=${encodeURIComponent(domain)}&type=MX`, {
+                headers: { accept: 'application/dns-json' },
+                signal: AbortSignal.timeout(timeoutMs),
+            })
+            if (!response.ok) continue
+            const body = await response.json()
+            if (body.Status === 3) return false
+            if (body.Status !== 0) continue
+            const mx = (body.Answer || []).filter((answer) => answer.type === 15 && !/^0 \.?$/.test(answer.data))
+            return mx.length > 0
+        } catch { /* try next resolver */ }
+    }
+    return null
+}
+
+export async function checkMx(domain, { resolveMx = dns.resolveMx, timeoutMs = 1500, cache = mxCache, dohImpl } = {}) {
     const key = String(domain || '').toLowerCase()
     if (!key) return null
     if (cache.has(key)) return cache.get(key)
@@ -31,7 +49,11 @@ export async function checkMx(domain, { resolveMx = dns.resolveMx, timeoutMs = 1
             return Array.isArray(records) && records.length > 0
         } catch (error) {
             const code = error?.code
-            if (code === 'ENOTFOUND' || code === 'ENODATA' || code === 'ENODOMAIN') return false
+            if (code === 'ENOTFOUND' || code === 'ENODATA' || code === 'ENODOMAIN') {
+                // Some resolvers refuse MX queries. Confirm over DNS-over-HTTPS before calling a domain dead.
+                const confirmed = await (dohImpl || mxOverHttps)(key, timeoutMs * 2)
+                return confirmed
+            }
             return null
         }
     })()
@@ -128,6 +150,7 @@ export async function enrichWebsite(website, {
     const startIsLinktree = pageKindFromUrl(home.finalUrl) === 'linktree'
 
     const consume = (page, kind) => {
+        if (pages.includes(page.finalUrl)) return
         const extracted = extractPage(page.html, page.finalUrl, kind)
         emailRows.push(...extracted.emails.map((row) => ({ ...row, mxValid: null })))
         people.push(...extracted.people)

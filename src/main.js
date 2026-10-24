@@ -21,7 +21,10 @@ export async function run() {
     try {
         const input = (await Actor.getInput()) || {}
         const urls = normalizeStartUrls(input.urls)
-        if (!urls.length) throw new Error('Provide at least one URL or domain in "urls"')
+        if (!urls.length) {
+            await Actor.fail('No valid websites in "urls". Add at least one domain (acme.com) or URL (https://acme.com).')
+            return
+        }
         const maxPages = clamp(input.maxPagesPerDomain, 1, 10, 3)
         const concurrency = clamp(input.concurrency, 1, 50, 20)
         const chargeOnlyHits = input.chargeOnlyHits !== false
