@@ -18,7 +18,7 @@
       "status": {
         "type": "string",
         "title": "Status",
-        "description": "ok when an email, phone, or social profile was found; no_contacts_found when the site loaded but nothing was found; website_unreachable or invalid_url otherwise.",
+        "description": "ok when an email, phone, or social profile was found; no_contacts_found when the site loaded but nothing was found; website_unreachable, website_timeout (gave up after 60s), or invalid_url (input row is not a domain or URL; never charged) otherwise.",
         "example": "ok"
       },
       "emails": {

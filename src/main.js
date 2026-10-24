@@ -2,7 +2,7 @@ import { pathToFileURL } from 'node:url'
 import path from 'node:path'
 import { Actor, log } from 'apify'
 import { clearMxCache, enrichWebsite } from './enrich.js'
-import { buildDatasetItem, hasContacts, normalizeStartUrls } from './dataset.js'
+import { buildDatasetItem, buildInvalidItem, hasContacts, partitionStartUrls } from './dataset.js'
 
 function clamp(value, min, max, fallback) {
     const number = Number(value)
@@ -16,11 +16,31 @@ export function isMainModule() {
     return import.meta.url === pathToFileURL(path.resolve(entry)).href
 }
 
+const SITE_DEADLINE_MS = 60000
+
+// Hard per-domain limit: one stuck site can never keep the run alive. Timed-out domains are not charged.
+export async function enrichWithDeadline(url, options, { deadlineMs = SITE_DEADLINE_MS, engine = enrichWebsite } = {}) {
+    let timer
+    try {
+        return await Promise.race([
+            engine(url, options),
+            new Promise((resolve) => {
+                timer = setTimeout(() => resolve({ error: 'website_timeout' }), deadlineMs)
+            }),
+        ])
+    } finally {
+        clearTimeout(timer)
+    }
+}
+
 export async function run() {
     await Actor.init()
     try {
         const input = (await Actor.getInput()) || {}
-        const urls = normalizeStartUrls(input.urls)
+        const { valid: urls, invalid } = partitionStartUrls(input.urls)
+        // Malformed rows get an error item (never charged) so callers can see what was skipped.
+        for (const bad of invalid) await Actor.pushData(buildInvalidItem(bad))
+        if (invalid.length) log.warning(`${invalid.length} input rows are not valid domains or URLs (status invalid_url, not charged).`)
         if (!urls.length) {
             await Actor.fail('No valid websites in "urls". Add at least one domain (acme.com) or URL (https://acme.com).')
             return
@@ -43,7 +63,7 @@ export async function run() {
             while (!stop && index < urls.length) {
                 const url = urls[index]
                 index += 1
-                const enriched = await enrichWebsite(url, {
+                const enriched = await enrichWithDeadline(url, {
                     proxyUrl: proxy ? await proxy.newUrl() : undefined,
                     maxPages,
                     validateMx,

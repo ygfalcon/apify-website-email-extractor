@@ -1,24 +1,45 @@
 import { emptySocials, registrableDomain } from './extract.js'
 
-export function normalizeStartUrls(urls) {
+const HOST_RE = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/i
+
+export function isValidHost(host) {
+    return HOST_RE.test(String(host || '').replace(/\.$/, ''))
+}
+
+// Returns valid unique start URLs plus the raw entries that are not domains or URLs, so each bad
+// row gets its own error item instead of vanishing silently.
+export function partitionStartUrls(urls) {
     const list = []
+    const invalid = []
     const seen = new Set()
     for (const entry of urls || []) {
         const raw = typeof entry === 'string' ? entry : entry?.url
-        if (!raw || typeof raw !== 'string') continue
+        if (raw == null || (typeof raw === 'string' && !raw.trim())) continue
+        if (typeof raw !== 'string') { invalid.push(String(raw)); continue }
+        const value = raw.trim()
         try {
-            const parsed = new URL(raw.startsWith('http') ? raw.trim() : `https://${raw.trim()}`)
-            if (!/^https?:$/.test(parsed.protocol)) continue
+            if (/\s/.test(value)) throw new Error('space')
+            const parsed = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(value) ? value : `https://${value}`)
+            if (!/^https?:$/.test(parsed.protocol) || !isValidHost(parsed.hostname)) throw new Error('bad')
             const href = `${parsed.protocol}//${parsed.host}/`
             const key = `${parsed.host.replace(/^www\./i, '').toLowerCase()}`
             if (seen.has(key)) continue
             seen.add(key)
             list.push(href)
         } catch {
-            // Drop rows that are not domains or URLs.
+            invalid.push(value)
         }
     }
-    return list
+    return { valid: list, invalid }
+}
+
+export function normalizeStartUrls(urls) {
+    return partitionStartUrls(urls).valid
+}
+
+export function buildInvalidItem(input, now = new Date()) {
+    const item = buildDatasetItem(input, { error: 'invalid_url' }, now)
+    return { ...item, domain: input, url: input }
 }
 
 export function domainFromUrl(url) {
